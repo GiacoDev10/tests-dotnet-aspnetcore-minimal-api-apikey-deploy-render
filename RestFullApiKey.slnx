@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="RestFullApiKey/RestFullApiKey.csproj" />
+  <Project Path="RestFullApiKeyTests/RestFullApiKeyTests.csproj" />
+</Solution>

@@ -1,0 +1,6 @@
+@RestFullApiKey_HostAddress = http://localhost:5023
+
+GET {{RestFullApiKey_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
