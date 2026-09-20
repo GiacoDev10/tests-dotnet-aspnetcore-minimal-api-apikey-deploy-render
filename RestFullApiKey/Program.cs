@@ -11,7 +11,11 @@ var secretKey = builder.Configuration["SecretKey"];
 builder.Services.AddOpenApi();
 builder.Services
     .AddAuthentication(ApiKeyAuthenticationOptions.DefaultScheme)
-    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationOptions.DefaultScheme, _ => { });
+    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationOptions.DefaultScheme,
+    options =>
+    {
+        options.SecretKey = secretKey;
+    });
 builder.Services.AddAuthorization();
 
 var app = builder.Build();

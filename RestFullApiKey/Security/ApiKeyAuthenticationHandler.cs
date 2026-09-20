@@ -11,16 +11,14 @@ namespace RestFullApiKey.Security;
 public sealed class ApiKeyAuthenticationHandler(
     IOptionsMonitor<ApiKeyAuthenticationOptions> options,
     ILoggerFactory logger,
-    UrlEncoder encoder,
-    IConfiguration configuration)
+    UrlEncoder encoder)
     : AuthenticationHandler<ApiKeyAuthenticationOptions>(options, logger, encoder)
 {
-
-    private readonly string? _secretKey = configuration["SecretKey"];
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (string.IsNullOrEmpty(_secretKey))
+        var secretKey = Options.SecretKey;
+
+        if (string.IsNullOrEmpty(secretKey))
         {
             return Task.FromResult(AuthenticateResult.Fail("API key is not configured on the server."));
         }
@@ -32,7 +30,7 @@ public sealed class ApiKeyAuthenticationHandler(
 
         // Timing Attack Safe Comparison
         byte[] providedBytes = Encoding.UTF8.GetBytes(providedKey.ToString());
-        byte[] expectedBytes = Encoding.UTF8.GetBytes(_secretKey);
+        byte[] expectedBytes = Encoding.UTF8.GetBytes(secretKey);
 
         if (providedBytes.Length != expectedBytes.Length ||
             !CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes))
