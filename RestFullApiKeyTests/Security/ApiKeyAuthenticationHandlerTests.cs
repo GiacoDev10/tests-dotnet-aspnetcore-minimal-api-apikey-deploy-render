@@ -69,6 +69,25 @@ public class ApiKeyAuthenticationHandlerTests
         Assert.Equal("Invalid API key.", result.Failure?.Message);
     }
 
+    [Fact]
+    public async Task HandleAuthenticateAsync_Success_WhenKeyMatches()
+    {
+        var apiOptions = new ApiKeyAuthenticationOptions { SecretKey = "test-secret-key" };
+
+        var handler = CreateHandler(apiOptions);
+
+        var scheme = new AuthenticationScheme(ApiKeyAuthenticationOptions.DefaultScheme, "X-API-KEY", typeof(ApiKeyAuthenticationHandler));
+        var context = new DefaultHttpContext();
+        context.Request.Headers[ApiKeyAuthenticationOptions.ApiKeyHeaderName] = "test-secret-key";
+
+        await handler.InitializeAsync(scheme, context);
+
+        var result = await handler.AuthenticateAsync();
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("static-client", result.Principal?.Identity!.Name);
+    }
+
     private static ApiKeyAuthenticationHandler CreateHandler(ApiKeyAuthenticationOptions apiOptions)
     {
         var optionsMonitorMock = new Mock<IOptionsMonitor<ApiKeyAuthenticationOptions>>();
