@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using RestFullApiKey.Options;
 using RestFullApiKey.Security;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Encodings.Web;
 
 namespace RestFullApiKeyTests.Security;
@@ -52,6 +48,25 @@ public class ApiKeyAuthenticationHandlerTests
         Assert.False(result.Succeeded);
         Assert.False(result.Failure is not null);
         Assert.True(result.None);
+    }
+
+    [Fact]
+    public async Task HandleAuthenticateAsync_Fail_InvalidApiKey()
+    {
+        var apiOptions = new ApiKeyAuthenticationOptions { SecretKey = "test-secret-key" };
+
+        var handler = CreateHandler(apiOptions);
+
+        var scheme = new AuthenticationScheme(ApiKeyAuthenticationOptions.DefaultScheme, "X-API-KEY", typeof(ApiKeyAuthenticationHandler));
+        var context = new DefaultHttpContext();
+        context.Request.Headers[ApiKeyAuthenticationOptions.ApiKeyHeaderName] = "invalid-api";
+
+        await handler.InitializeAsync(scheme, context);
+
+        var result = await handler.AuthenticateAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.Equal("Invalid API key.", result.Failure?.Message);
     }
 
     private static ApiKeyAuthenticationHandler CreateHandler(ApiKeyAuthenticationOptions apiOptions)
