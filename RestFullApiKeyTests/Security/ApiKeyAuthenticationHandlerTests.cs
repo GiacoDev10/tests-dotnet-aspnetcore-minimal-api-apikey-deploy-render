@@ -35,6 +35,25 @@ public class ApiKeyAuthenticationHandlerTests
         Assert.Equal("API key is not configured on the server.", result.Failure?.Message);
     }
 
+    [Fact]
+    public async Task HandleAuthenticateAsync_NoResult_NoHeaderProvided()
+    {
+        var apiOptions = new ApiKeyAuthenticationOptions { SecretKey = "test-secret-key" };
+
+        var handler = CreateHandler(apiOptions);
+
+        var scheme = new AuthenticationScheme(ApiKeyAuthenticationOptions.DefaultScheme, "X-API-KEY", typeof(ApiKeyAuthenticationHandler));
+        var context = new DefaultHttpContext();
+
+        await handler.InitializeAsync(scheme, context);
+
+        var result = await handler.AuthenticateAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.False(result.Failure is not null);
+        Assert.True(result.None);
+    }
+
     private static ApiKeyAuthenticationHandler CreateHandler(ApiKeyAuthenticationOptions apiOptions)
     {
         var optionsMonitorMock = new Mock<IOptionsMonitor<ApiKeyAuthenticationOptions>>();
