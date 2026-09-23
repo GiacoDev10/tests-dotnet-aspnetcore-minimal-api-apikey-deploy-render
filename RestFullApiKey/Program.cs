@@ -1,4 +1,3 @@
-using RestFullApiKey.Options;
 using RestFullApiKey.Security;
 using Scalar.AspNetCore;
 
@@ -9,7 +8,7 @@ var secretKey = builder.Configuration["SecretKey"];
 
 // Add services to the container.
 builder.Services.AddOpenApi();
-builder.Services.AddApiKeySecurity(secretKey);
+builder.Services.AddApiKeySecurity(builder.Configuration);
 
 var app = builder.Build();
 

@@ -4,14 +4,19 @@ namespace RestFullApiKey.Security;
 
 public static class ApiKeyAuthenticationExtensions
 {
-    public static IServiceCollection AddApiKeySecurity(this IServiceCollection services, string secretKey)
+    public static IServiceCollection AddApiKeySecurity(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAuthentication(ApiKeyAuthenticationOptions.DefaultScheme)
-                .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationOptions.DefaultScheme,
-                options =>
-                {
-                    options.SecretKey = secretKey;
-                });
+        var scheme = ApiKeyAuthenticationOptions.DefaultScheme;
+        var secret = configuration["SecretKey"];
+
+        services.AddOptions<ApiKeyAuthenticationOptions>(scheme)
+            .Configure(options => options.SecretKey = secret)
+            .Validate(options => !string.IsNullOrWhiteSpace(options.SecretKey), "SecretKey must be provided.")
+            .ValidateOnStart();
+
+        services.AddAuthentication(scheme)
+                .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(scheme, null);
+
         services.AddAuthorization();
 
         return services;
