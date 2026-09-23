@@ -9,14 +9,7 @@ var secretKey = builder.Configuration["SecretKey"];
 
 // Add services to the container.
 builder.Services.AddOpenApi();
-builder.Services
-    .AddAuthentication(ApiKeyAuthenticationOptions.DefaultScheme)
-    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationOptions.DefaultScheme,
-    options =>
-    {
-        options.SecretKey = secretKey;
-    });
-builder.Services.AddAuthorization();
+builder.Services.AddApiKeySecurity(secretKey);
 
 var app = builder.Build();
 
