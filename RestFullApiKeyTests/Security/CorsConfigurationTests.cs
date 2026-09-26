@@ -29,4 +29,17 @@ public class CorsConfigurationTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(origin, response.Headers.GetValues("Access-Control-Allow-Origin").First());
     }
+
+    [Fact]
+    public async Task Get_DeniedOrigin_NoHeader()
+    {
+        var client = _factory.CreateClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.Add("Origin", "http://evil.com");
+
+        var response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.False(response.Headers.Contains("Access-Control-Allow-Origin"), "Expected no Access-Control-Allow-Origin header for denied origin.");
+    }
 }
