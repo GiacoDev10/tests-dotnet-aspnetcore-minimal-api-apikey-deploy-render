@@ -26,12 +26,6 @@ builder.Services.AddApiKeySecurity(builder.Configuration);
 
 var app = builder.Build();
 
-//app.Use(async (ctx, next) =>
-//{
-//    ctx.Response.Headers[HeaderNames.AccessControlAllowOrigin] = $"{allowedOrigins[0]}";
-//    await next.Invoke();
-//});
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
