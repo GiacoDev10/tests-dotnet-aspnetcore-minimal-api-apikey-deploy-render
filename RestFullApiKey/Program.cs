@@ -1,4 +1,3 @@
-using Microsoft.Net.Http.Headers;
 using RestFullApiKey.Security;
 using Scalar.AspNetCore;
 

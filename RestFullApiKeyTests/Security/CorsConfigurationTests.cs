@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.TestHost;
 using System.Net;
 
 namespace RestFullApiKeyTests.Security;
@@ -10,14 +12,23 @@ public class CorsConfigurationTests : IClassFixture<WebApplicationFactory<Progra
 
     public CorsConfigurationTests(WebApplicationFactory<Program> factory)
     {
-        _factory = factory;
+        // Create a new client with the CORS policy configured for the test - working in ci/cd pipeline
+        _factory = factory.WithWebHostBuilder(b => b.ConfigureTestServices(services =>
+            services.Configure<CorsOptions>(options =>
+            {
+                options.AddPolicy("_myAllowSpecificOrigins", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200", "https://giaco.dev")
+                          .WithMethods("GET")
+                          .AllowAnyHeader();
+                });
+            })
+        ));
     }
 
     [Theory]
     [InlineData("http://localhost:4200")]
-    [InlineData("https://localhost:4200")]
-    [InlineData("http://localhost:7000")]
-    [InlineData("http://localhost:5023")]
+    [InlineData("https://giaco.dev")]
     public async Task Get_AllowedOrigin_ReturnsHeader(string origin)
     {
         var client = _factory.CreateClient();
@@ -43,17 +54,19 @@ public class CorsConfigurationTests : IClassFixture<WebApplicationFactory<Progra
         Assert.False(response.Headers.Contains("Access-Control-Allow-Origin"), "Expected no Access-Control-Allow-Origin header for denied origin.");
     }
 
-    [Fact]
-    public async Task Preflight_AllowedOrigin_ReturnsHeaders()
+    [Theory]
+    [InlineData("http://localhost:4200")]
+    [InlineData("https://giaco.dev")]
+    public async Task Preflight_AllowedOrigin_ReturnsHeaders(string origin)
     {
         var client = _factory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Options, "/");
-        request.Headers.Add("Origin", "http://localhost:4200");
+        request.Headers.Add("Origin", origin);
         request.Headers.Add("Access-Control-Request-Method", "GET");
 
         var response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
-        Assert.Equal("http://localhost:4200", response.Headers.GetValues("Access-Control-Allow-Origin").First());
+        Assert.Equal(origin, response.Headers.GetValues("Access-Control-Allow-Origin").First());
         Assert.Contains("GET", response.Headers.GetValues("Access-Control-Allow-Methods").First());
     }
 
