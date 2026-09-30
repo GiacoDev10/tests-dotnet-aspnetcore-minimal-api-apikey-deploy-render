@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using RestFullApiKey.Endpoints;
 using RestFullApiKey.Security;
 using Scalar.AspNetCore;
 
@@ -15,7 +17,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(allowedOrigins)
-                .WithMethods("GET")
+                .WithMethods("GET", "POST")
                 .AllowAnyHeader();
         });
 });
@@ -44,6 +46,8 @@ app.MapGet("/", () => $"Hello world!");
 
 app.MapGet("/secure", () => $"Hello secure world! {secretKey}")
     .RequireAuthorization();
+
+app.MapDataEndpoints();
 
 app.Run();
 
