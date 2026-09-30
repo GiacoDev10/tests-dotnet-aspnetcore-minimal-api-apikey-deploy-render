@@ -14,7 +14,17 @@ public class DataDtoValidationTests
         var ok = TryValidate(dto, out var results);
 
         Assert.False(ok);
-        Assert.Contains(results, r => r.MemberNames.Contains("message"));
+        Assert.Contains(results, r => r.MemberNames.Contains("Message"));
+    }
+
+    [Fact]
+    public void Validate_Success_WhenMessageIsValid()
+    {
+        var dto = new DataDto("my data");
+        var ok = TryValidate(dto, out var results);
+
+        Assert.True(ok);
+        Assert.Empty(results);
     }
 
     private static bool TryValidate(DataDto dto, out List<ValidationResult> results)

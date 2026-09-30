@@ -2,4 +2,4 @@
 
 namespace RestFullApiKey.Data;
 
-public record DataDto([property: Required] string message);
+public record DataDto([property: Required] string Message);
