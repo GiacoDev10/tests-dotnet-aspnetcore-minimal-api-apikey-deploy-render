@@ -1,5 +1,5 @@
-﻿namespace RestFullApiKey.Data;
+﻿using System.ComponentModel.DataAnnotations;
 
-using System.ComponentModel.DataAnnotations;
+namespace RestFullApiKey.Data;
 
-public record DataDto([Required] string message);
+public record DataDto([property: Required] string message);
