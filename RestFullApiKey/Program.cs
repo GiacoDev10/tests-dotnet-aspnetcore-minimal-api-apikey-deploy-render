@@ -21,6 +21,7 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader();
         });
 });
+builder.Services.AddValidation();
 
 builder.Services.AddOpenApi();
 builder.Services.AddApiKeySecurity(builder.Configuration);

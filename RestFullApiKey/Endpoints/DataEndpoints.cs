@@ -13,6 +13,6 @@ public static class DataEndpoints
 
     private static IResult HandlerData([FromBody] DataDto dto)
     {
-        return Results.Ok(dto.message);
+        return Results.Ok(dto);
     }
 }
