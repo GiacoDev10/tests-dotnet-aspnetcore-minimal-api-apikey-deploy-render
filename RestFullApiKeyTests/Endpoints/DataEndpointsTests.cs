@@ -47,5 +47,21 @@ namespace RestFullApiKeyTests.Endpoints
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
+
+        [Theory]
+        [InlineData("{\"message\":null}")]
+        [InlineData("{}")]
+        [InlineData("{\"message\":\"\"}")]
+        public async Task PostData_Invalid_Return400WithErrorMessage(string json)
+        {
+            using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync("/data", content, TestContext.Current.CancellationToken);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            Assert.Contains("message", body, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("errors", body, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }
