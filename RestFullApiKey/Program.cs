@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using RestFullApiKey.Endpoints;
 using RestFullApiKey.Security;
 using Scalar.AspNetCore;
@@ -18,13 +17,16 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(allowedOrigins)
                 .WithMethods("GET", "POST")
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .WithExposedHeaders("Retry-After");
         });
 });
 builder.Services.AddValidation();
 
 builder.Services.AddOpenApi();
 builder.Services.AddApiKeySecurity(builder.Configuration);
+builder.Services.AddRenderForwardedHeaders();
+builder.Services.AddPostRateLimiting(builder.Configuration);
 
 var app = builder.Build();
 
@@ -40,8 +42,12 @@ if (app.Environment.IsProduction())
 };
 
 // Configure the HTTP request pipeline.
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/", () => $"Hello world!");
 
