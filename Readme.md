@@ -32,15 +32,6 @@ The repository demonstrates the full deployment pipeline:
 3. Configure environment variables (API key, ports, etc.)  
 4. Deploy and validate the API using Scalar/OpenAPI in the cloud  
 
-## 📁 Repository Structure
-RestFullMinimalApi-ApiKey/
-├── 📂 RestFullApiKey/            # Main Project (Minimal API) 
-│   └── RestFullApiKey.csproj
-├── 📂 RestFullApiKeyTests/       # Unit Test Project
-│   └── RestFullApiKeyTests.csproj
-├── RestFullApiKey.slnx           # Visual Studio Solution File
-└── Readme.md                     # Project Documentation
-
 ## 📦 Technologies Used
 - **ASP.NET Core Minimal API**  
 - **OpenAPI / Swagger**  
