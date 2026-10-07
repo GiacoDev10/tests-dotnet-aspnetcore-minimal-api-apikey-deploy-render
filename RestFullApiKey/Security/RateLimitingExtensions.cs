@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using RestFullApiKey.Options;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 
 namespace RestFullApiKey.Security;
@@ -68,7 +69,14 @@ public static class RateLimitingExtensions
                         Instance = context.HttpContext.Request.Path
                     };
 
-                    await response.WriteAsJsonAsync(problem, cancellationToken);
+                    var json = JsonSerializer.Serialize(
+                        problem,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        });
+
+                    await response.WriteAsync(json, cancellationToken);
                 };
             });
 
@@ -87,8 +95,8 @@ public static class RateLimitingExtensions
                 Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor |
                 Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
 
-            // En Render no controlas el rango de IP del proxy, así que se vacían las listas de confianza.
-            // ForwardLimit = 1 usa solo el último valor añadido por el proxy (el cliente no puede falsificarlo).
+            // In Render you do not control the proxy IP range, so the trust lists are emptied.
+            // ForwardLimit = 1 uses only the last value added by the proxy (the client cannot forge it).
             options.KnownIPNetworks.Clear();
             options.KnownProxies.Clear();
             options.ForwardLimit = 1;
