@@ -5,7 +5,7 @@ namespace RestFullApiKey.Security;
 public sealed class TurnstileService(HttpClient httpClient, IConfiguration configuration)
 {
     private readonly HttpClient _httpClient = httpClient;
-    private readonly string? _secretKey = configuration["Turnstile:SecretKeyPasses"];
+    private readonly string? _secretKey = configuration["Turnstile:SecretKey"];
     private const string SiteverifyUrl = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
     public async Task<TurnstileResponse> ValidateTokenAsync(string token, string remoteip)
