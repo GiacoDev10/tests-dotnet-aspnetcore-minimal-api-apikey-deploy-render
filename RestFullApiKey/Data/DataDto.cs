@@ -2,4 +2,6 @@
 
 namespace RestFullApiKey.Data;
 
-public record DataDto([property: Required] string Message);
+public record DataDto(
+    [property: Required] string Message,
+    [property: Required] string TurnstileToken);
