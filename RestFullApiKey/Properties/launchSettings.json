@@ -23,7 +23,7 @@
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Turnstile__SecretKey": "1x0000000000000000000000000000000AA"
+        "TURNSTILE__SECRETKEY": "1x0000000000000000000000000000000AA"
       },
       "publishAllPorts": true,
       "useSSL": true
