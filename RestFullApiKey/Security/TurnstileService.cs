@@ -1,11 +1,13 @@
-﻿using System.Text.Json;
+﻿using Microsoft.Extensions.Options;
+using RestFullApiKey.Options;
+using System.Text.Json;
 
 namespace RestFullApiKey.Security;
 
-public sealed class TurnstileService(HttpClient httpClient, IConfiguration configuration)
+public sealed class TurnstileService(HttpClient httpClient, IOptions<TurnstileOptions> options)
 {
     private readonly HttpClient _httpClient = httpClient;
-    private readonly string? _secretKey = configuration["Turnstile:SecretKey"];
+    private readonly string? _secretKey = options.Value.SecretKey;
     private const string SiteverifyUrl = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
     public async Task<TurnstileResponse> ValidateTokenAsync(string token, string remoteip)

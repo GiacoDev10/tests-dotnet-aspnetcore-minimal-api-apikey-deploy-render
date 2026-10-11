@@ -27,6 +27,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddApiKeySecurity(builder.Configuration);
 builder.Services.AddRenderForwardedHeaders();
 builder.Services.AddPostRateLimiting(builder.Configuration);
+builder.Services.AddTurnstileSecurity(builder.Configuration);
 builder.Services.AddHttpClient<TurnstileService>(c => c.Timeout = TimeSpan.FromSeconds(10));
 
 var app = builder.Build();
