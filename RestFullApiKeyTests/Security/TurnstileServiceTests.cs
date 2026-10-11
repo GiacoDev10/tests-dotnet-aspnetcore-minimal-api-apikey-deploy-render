@@ -63,6 +63,27 @@ public class TurnstileServiceTests
         Assert.Contains("internal-error", result.ErrorCodes!);
     }
 
+    [Fact]
+    public async Task ValidateTokenAsync_ReturnsInternalError_WhenHttpClientThrows()
+    {
+        var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException());
+
+        var httpClient = new HttpClient(handlerMock.Object);
+        var service = new TurnstileService(httpClient, CreateOptions(TestSecret));
+
+        var result = await service.ValidateTokenAsync("token", null!);
+
+        Assert.False(result.Success);
+        Assert.Contains("internal-error", result.ErrorCodes!);
+    }
+
     private static HttpClient CreateHttpClient(HttpResponseMessage response, Action<HttpRequestMessage>? requestInspector = null)
     {
         var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
