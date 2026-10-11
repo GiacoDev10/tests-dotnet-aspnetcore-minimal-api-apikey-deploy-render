@@ -29,6 +29,23 @@ public class TurnstileServiceTests
         Assert.Null(result.ErrorCodes);
     }
 
+    [Fact]
+    public async Task ValidateTokenAsync_ReturnsFailure_WithErrorCodes_WhenCloudflareFails()
+    {
+        var json = """{ "success": false, "error-codes": ["invalid-input-response"] }""";
+        var httpClient = CreateHttpClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        });
+
+        var service = new TurnstileService(httpClient, CreateOptions(TestSecret));
+
+        var result = await service.ValidateTokenAsync("bad-token", null!);
+
+        Assert.False(result.Success);
+        Assert.Contains("invalid-input-response", result.ErrorCodes!);
+    }
+
     private static HttpClient CreateHttpClient(HttpResponseMessage response, Action<HttpRequestMessage>? requestInspector = null)
     {
         var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
