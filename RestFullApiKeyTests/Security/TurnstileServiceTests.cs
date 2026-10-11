@@ -84,6 +84,34 @@ public class TurnstileServiceTests
         Assert.Contains("internal-error", result.ErrorCodes!);
     }
 
+    [Theory]
+    [InlineData("1.2.3.4", true)]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    public async Task ValidateTokenAsync_SendsRemoteIp_OnlyWhenProvided(string? remoteIp, bool expectRemoteIp)
+    {
+        HttpRequestMessage? capturedRequest = null;
+        var httpClient = CreateHttpClient(
+            new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("""{ "success": true }""", Encoding.UTF8, "application/json")
+            },
+            req => capturedRequest = req);
+
+        var service = new TurnstileService(httpClient, CreateOptions(TestSecret));
+        await service.ValidateTokenAsync("token", remoteIp!);
+
+        var content = await capturedRequest!.Content!.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var pairs = System.Web.HttpUtility.ParseQueryString(content);
+        Assert.Equal(TestSecret, pairs["secret"]);
+        Assert.Equal("token", pairs["response"]);
+
+        if (expectRemoteIp)
+            Assert.Equal(remoteIp, pairs["remoteip"]);
+        else
+            Assert.Null(pairs["remoteip"]);
+    }
+
     private static HttpClient CreateHttpClient(HttpResponseMessage response, Action<HttpRequestMessage>? requestInspector = null)
     {
         var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
