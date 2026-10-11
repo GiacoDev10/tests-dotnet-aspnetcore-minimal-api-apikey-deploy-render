@@ -36,6 +36,7 @@ public class PostRateLimitTests : IClassFixture<WebApplicationFactory<Program>>
 
         _client = configuresFactory.CreateClient();
         _client.DefaultRequestHeaders.Add(ApiKeyAuthenticationOptions.ApiKeyHeaderName, TestApiKey);
+        _client.DefaultRequestHeaders.Add("X-Forwarded-For", "0.0.0.0");
     }
 
 
@@ -46,11 +47,11 @@ public class PostRateLimitTests : IClassFixture<WebApplicationFactory<Program>>
 
         for (var i = 0; i < 2; i++)
         {
-            using var ok = await _client.PostAsJsonAsync("/data", new { message = "Hi!" }, ct);
+            using var ok = await _client.PostAsJsonAsync("/data", new { message = "Hi!", turnstileToken = "1x00000000000000000000AA" }, ct);
             Assert.Equal(HttpStatusCode.OK, ok.StatusCode);
         }
 
-        using var limited = await _client.PostAsJsonAsync("/data", new { message = "Hi!" }, ct);
+        using var limited = await _client.PostAsJsonAsync("/data", new { message = "Hi!", turnstileToken = "1x00000000000000000000AA" }, ct);
         Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
 
         Assert.Equal("application/problem+json", limited.Content.Headers.ContentType?.MediaType);

@@ -33,13 +33,14 @@ namespace RestFullApiKeyTests.Endpoints
 
             _client = configuresFactory.CreateClient();
             _client.DefaultRequestHeaders.Add(ApiKeyAuthenticationOptions.ApiKeyHeaderName, TestApiKey);
+            _client.DefaultRequestHeaders.Add("X-Forwarded-For", "0.0.0.0");
         }
 
         [Fact]
         public async Task PostData_Success_Return200()
         {
             var response = await _client.PostAsJsonAsync(
-                "/data", new { message = "Hi!" },
+                "/data", new { message = "Hi!", turnstileToken = "1x00000000000000000000AA" },
                 TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

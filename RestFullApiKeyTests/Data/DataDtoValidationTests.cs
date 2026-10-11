@@ -6,11 +6,11 @@ namespace RestFullApiKeyTests.Data;
 public class DataDtoValidationTests
 {
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Validate_Fail_WhenMessageIsNullOrEmpty(string? message)
+    [InlineData(null, "1x00000000000000000000AA")]
+    [InlineData("", "1x00000000000000000000AA")]
+    public void Validate_Fail_WhenMessageIsNullOrEmpty(string? message, string turnstileToken)
     {
-        var dto = new DataDto(message!);
+        var dto = new DataDto(message!, turnstileToken);
         var ok = TryValidate(dto, out var results);
 
         Assert.False(ok);
@@ -20,7 +20,7 @@ public class DataDtoValidationTests
     [Fact]
     public void Validate_Success_WhenMessageIsValid()
     {
-        var dto = new DataDto("my data");
+        var dto = new DataDto("my data", "1x00000000000000000000AA");
         var ok = TryValidate(dto, out var results);
 
         Assert.True(ok);
