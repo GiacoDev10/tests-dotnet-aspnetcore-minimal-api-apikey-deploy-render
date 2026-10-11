@@ -46,6 +46,23 @@ public class TurnstileServiceTests
         Assert.Contains("invalid-input-response", result.ErrorCodes!);
     }
 
+    [Fact]
+    public async Task ValidateTokenAsync_ReturnsInternalError_WhenResponseIsInvalidJson()
+    {
+        var badJson = "{ not‑json";
+        var httpClient = CreateHttpClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(badJson, Encoding.UTF8, "application/json")
+        });
+
+        var service = new TurnstileService(httpClient, CreateOptions(TestSecret));
+
+        var result = await service.ValidateTokenAsync("token", null!);
+
+        Assert.False(result.Success);
+        Assert.Contains("internal-error", result.ErrorCodes!);
+    }
+
     private static HttpClient CreateHttpClient(HttpResponseMessage response, Action<HttpRequestMessage>? requestInspector = null)
     {
         var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
