@@ -16,8 +16,7 @@ public static class DataEndpoints
     private async static Task<IResult> HandlerData([FromBody] DataDto dto, TurnstileService service, HttpContext ctx)
     {
 
-        var remoteip = ctx.Connection.RemoteIpAddress?.ToString() 
-            ?? ctx.Request.Headers["CF-Connecting-IP"].FirstOrDefault();
+        var remoteip = ctx.Connection.RemoteIpAddress?.ToString();
 
         if (string.IsNullOrEmpty(remoteip))
         {
