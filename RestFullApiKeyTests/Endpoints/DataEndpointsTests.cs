@@ -10,7 +10,7 @@ namespace RestFullApiKeyTests.Endpoints
 {
     public class DataEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        private const string TestApiKey = "test-secret-key";
+        private const string TestApiKey = "sk_test_jH/kiox1NerTVsknMeYRA2KOp2H9apLW47yN/ATymE0=";
         private readonly HttpClient _client;
 
         public DataEndpointsTests(WebApplicationFactory<Program> factory)

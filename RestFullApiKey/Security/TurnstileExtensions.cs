@@ -8,7 +8,7 @@ namespace RestFullApiKey.Security
         {
             services.AddOptions<TurnstileOptions>()
                 .Bind(configuration.GetSection(TurnstileOptions.SectionName))
-                .Validate(o => !string.IsNullOrWhiteSpace(o.SecretKey), "Turnstile secret key must be provided.")
+                .Validate(o => !string.IsNullOrWhiteSpace(o.SecretKey) && o.SecretKey.Length >= 20, "Turnstile secret key must be provided.")
                 .ValidateOnStart();
 
             return services;

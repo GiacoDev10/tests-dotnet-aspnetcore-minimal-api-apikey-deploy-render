@@ -12,7 +12,7 @@ namespace RestFullApiKeyTests.Security;
 
 public class PostRateLimitTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private const string TestApiKey = "test-secret-key";
+    private const string TestApiKey = "sk_test_jH/kiox1NerTVsknMeYRA2KOp2H9apLW47yN/ATymE0=";
     private HttpClient _client;
 
     public PostRateLimitTests(WebApplicationFactory<Program> factory)

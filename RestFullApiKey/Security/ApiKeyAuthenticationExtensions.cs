@@ -11,7 +11,7 @@ public static class ApiKeyAuthenticationExtensions
 
         services.AddOptions<ApiKeyAuthenticationOptions>(scheme)
             .Configure(options => options.SecretKey = secret)
-            .Validate(options => !string.IsNullOrWhiteSpace(options.SecretKey), "SecretKey must be provided.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.SecretKey) && options.SecretKey.Length >= 32, "SecretKey must be provided with at least 32 chars.")
             .ValidateOnStart();
 
         services.AddAuthentication(scheme)
