@@ -58,7 +58,14 @@ app.MapGet("/", () => $"Hello world!");
 app.MapGet("/secure", () => $"Hello secure world! {secretKey}")
     .RequireAuthorization();
 
-app.MapGet("/userip", (HttpContext ctx) => $"UserIp: { ctx.Connection.RemoteIpAddress?.ToString() }")
+app.MapGet("/userip", (HttpContext ctx) => Results.Ok(new
+{
+    remote = ctx.Connection.RemoteIpAddress?.ToString(),
+    xff = ctx.Request.Headers["X-Forwarded-For"].ToString(),
+    xOriginalFor = ctx.Request.Headers["X-Original-For"].ToString(),
+    cfConnectingIp = ctx.Request.Headers["CF-Connecting-IP"].ToString(),
+    trueClientIp = ctx.Request.Headers["True-Client-IP"].ToString()
+}))
     .RequireAuthorization();
 
 app.MapDataEndpoints();
