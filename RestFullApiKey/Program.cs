@@ -36,16 +36,18 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-};
+    app.UseHttpsRedirection();
+}
+;
 
 if (app.Environment.IsProduction())
 {
     app.UseHsts();
-};
+}
+;
 
 // Configure the HTTP request pipeline.
 app.UseForwardedHeaders();
-app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseRateLimiter();
 app.UseAuthentication();
@@ -54,6 +56,9 @@ app.UseAuthorization();
 app.MapGet("/", () => $"Hello world!");
 
 app.MapGet("/secure", () => $"Hello secure world! {secretKey}")
+    .RequireAuthorization();
+
+app.MapGet("/userip", (HttpContext ctx) => $"UserIp: { ctx.Connection.RemoteIpAddress?.ToString() }")
     .RequireAuthorization();
 
 app.MapDataEndpoints();
